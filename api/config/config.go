@@ -12,8 +12,8 @@ type Config struct {
 	Host string
 	Port string
 
-	DB DBConfig
-	FS FSConfig
+	DB *DBConfig
+	FS *FSConfig
 }
 
 type DBConfig struct {
@@ -45,13 +45,13 @@ func MustLoad() *Config {
 		Port: mustRetrieve("APP_PORT"),
 	}
 
-	cfg.DB = DBConfig{
+	cfg.DB = &DBConfig{
 		Url:    mustRetrieve("DB_URL"),
 		DBName: mustRetrieve("DB_NAME"),
 		DBColl: mustRetrieve("DB_COLL"),
 	}
 
-	cfg.FS = FSConfig{
+	cfg.FS = &FSConfig{
 		Base: mustRetrieve("STORAGE_PATH"),
 	}
 
