@@ -5,15 +5,14 @@ import (
 	"Goose47/storage/config"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
-func Init() {
+func Serve(cfg *config.Config) error {
 	r := NewRouter()
-	gin.SetMode(config.AppConfig.Mode)
+	gin.SetMode(cfg.Mode)
 
-	addr := fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port)
-	log.Fatal(r.Run(addr))
+	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
+	return r.Run(addr)
 }
 
 func NewRouter() *gin.Engine {

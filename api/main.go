@@ -15,5 +15,5 @@ func main() {
 	}
 	taskManager := tasks.New()
 	taskManager.RunTasks(db, cfg.FS)
-	server.Init()
+	server.Serve(cfg)
 }
