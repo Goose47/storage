@@ -12,14 +12,14 @@ import (
 
 type DB struct {
 	Conn *mongo.Client
-	cfg  config.DBConfig
+	cfg  *config.DBConfig
 }
 
 func (db *DB) GetCollection() *mongo.Collection {
 	return db.Conn.Database(db.cfg.DBName).Collection(db.cfg.DBColl)
 }
 
-func New(cfg config.DBConfig) (*DB, error) {
+func New(cfg *config.DBConfig) (*DB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -34,5 +34,6 @@ func New(cfg config.DBConfig) (*DB, error) {
 
 	return &DB{
 		Conn: conn,
+		cfg:  cfg,
 	}, nil
 }

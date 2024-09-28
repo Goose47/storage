@@ -2,17 +2,18 @@ package main
 
 import (
 	"Goose47/storage/config"
-	"Goose47/storage/db"
+	database "Goose47/storage/db"
 	"Goose47/storage/server"
 	"Goose47/storage/tasks"
 )
 
 func main() {
 	cfg := config.MustLoad()
-	db, err := db.New(cfg.DB)
+	db, err := database.New(cfg.DB)
 	if err != nil {
 
 	}
-	tasks.Init()
+	taskManager := tasks.New()
+	taskManager.RunTasks(db, cfg.FS)
 	server.Init()
 }
