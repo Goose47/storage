@@ -8,8 +8,11 @@ import (
 )
 
 func main() {
-	config.Init()
-	db.Init()
+	cfg := config.MustLoad()
+	db, err := db.New(cfg.DB)
+	if err != nil {
+
+	}
 	tasks.Init()
 	server.Init()
 }

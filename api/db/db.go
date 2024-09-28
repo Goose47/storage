@@ -3,31 +3,36 @@ package db
 import (
 	"Goose47/storage/config"
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"log"
 	"time"
 )
 
-var Client *mongo.Client
-
-func GetCollection() *mongo.Collection {
-	return Client.Database(config.DBConfig.DBName).Collection(config.DBConfig.DBColl)
+type DB struct {
+	Conn *mongo.Client
+	cfg  config.DBConfig
 }
 
-func Init() {
+func (db *DB) GetCollection() *mongo.Collection {
+	return db.Conn.Database(db.cfg.DBName).Collection(db.cfg.DBColl)
+}
+
+func New(cfg config.DBConfig) (*DB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	var err error
-	Client, err = mongo.Connect(ctx, options.Client().ApplyURI(config.DBConfig.Url))
+	conn, err := mongo.Connect(ctx, options.Client().ApplyURI(cfg.Url))
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("failed to connect to database: %s", cfg.Url)
+	}
+	err = conn.Ping(ctx, readpref.Primary())
+	if err != nil {
+		return nil, fmt.Errorf("failed to ping database")
 	}
 
-	err = Client.Ping(ctx, readpref.Primary())
-	if err != nil {
-		log.Fatal(err)
-	}
+	return &DB{
+		Conn: conn,
+	}, nil
 }

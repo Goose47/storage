@@ -1,48 +1,68 @@
 package config
 
 import (
+	"errors"
+	"fmt"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 )
 
-var AppConfig struct {
+type Config struct {
 	Mode string
 	Host string
 	Port string
+
+	DB DBConfig
+	FS FSConfig
 }
 
-var DBConfig struct {
+type DBConfig struct {
 	Url    string
 	DBName string
 	DBColl string
 }
 
-var FSConfig struct {
+type FSConfig struct {
 	Base string
 }
 
-func Init() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(err)
+const configPath = ".env"
+
+// MustLoad loads config from .env file and panics on error
+func MustLoad() *Config {
+	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
+		panic(fmt.Errorf("config file does not exist: %s", configPath))
 	}
 
-	AppConfig.Mode = checkAndRetrieve("APP_MODE")
-	AppConfig.Host = checkAndRetrieve("APP_HOST")
-	AppConfig.Port = checkAndRetrieve("APP_PORT")
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(fmt.Errorf("failed to load config file: %w", err))
+	}
 
-	DBConfig.Url = checkAndRetrieve("DB_URL")
-	DBConfig.DBName = checkAndRetrieve("DB_NAME")
-	DBConfig.DBColl = checkAndRetrieve("DB_COLL")
+	cfg := Config{
+		Mode: mustRetrieve("APP_MODE"),
+		Host: mustRetrieve("APP_HOST"),
+		Port: mustRetrieve("APP_PORT"),
+	}
 
-	FSConfig.Base = checkAndRetrieve("STORAGE_PATH")
+	cfg.DB = DBConfig{
+		Url:    mustRetrieve("DB_URL"),
+		DBName: mustRetrieve("DB_NAME"),
+		DBColl: mustRetrieve("DB_COLL"),
+	}
+
+	cfg.FS = FSConfig{
+		Base: mustRetrieve("STORAGE_PATH"),
+	}
+
+	return &cfg
 }
 
-func checkAndRetrieve(key string) string {
+// mustRetrieve retrieves key from environment variables and panics if value is empty
+func mustRetrieve(key string) string {
 	val, ok := os.LookupEnv(key)
-	if !ok || val == "" {
-		log.Fatalf("%s is not present in env.", key)
+	if !ok {
+		panic(fmt.Errorf("%s is not present in env", key))
 	}
 	return val
 }
