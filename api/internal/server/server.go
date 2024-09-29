@@ -2,7 +2,6 @@ package server
 
 import (
 	"Goose47/storage/internal/api/controllers"
-	"Goose47/storage/internal/api/middleware"
 	"Goose47/storage/internal/config"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -27,7 +26,6 @@ func NewRouter(c *controllers.StorageController) *gin.Engine {
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	r.Use(middleware.Handle404)
 
 	AddApiGroup(r, c)
 
