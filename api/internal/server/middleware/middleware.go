@@ -30,6 +30,7 @@ func NewAuthMiddleware(
 
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 			c.Abort()
+			return
 		}
 
 		claims, err := jwt.Parse(token, secret)
@@ -38,6 +39,8 @@ func NewAuthMiddleware(
 			log.Warn("failed to parse token")
 
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "bad token"})
+			c.Abort()
+			return
 		}
 
 		log.Info("token parsed successfully")
