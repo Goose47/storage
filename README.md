@@ -21,7 +21,10 @@ Running gRPC SSO application is required. App must be registered in SSO. JWT tok
 
 ## API Description
 
-
+Token must be present in Authorization header:
+```
+Authorization: Bearer {jwt-token-here}
+```
 
 ------------------------------------------------------------------------------------------
 
