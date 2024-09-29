@@ -29,7 +29,7 @@ func main() {
 	repo := repositories.NewStorageRepository(db.GetCollection())
 
 	itemService := services.NewItemService(log, repo, repo, repo, cfg.FS.Base)
-	permsService, err := services.NewPermsService(log, cfg.AuthAddress)
+	permsService, err := services.NewPermsService(log, cfg.AuthHost, cfg.AuthPort)
 	if err != nil {
 		log.Error(fmt.Sprintf("could not create perms service: %s", err.Error()))
 		return

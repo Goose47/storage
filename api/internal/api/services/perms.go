@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
+	"net"
 )
 
 type PermsService struct {
@@ -16,8 +17,10 @@ type PermsService struct {
 
 func NewPermsService(
 	log *slog.Logger,
-	authAddress string,
+	authHost string,
+	authPort string,
 ) (*PermsService, error) {
+	authAddress := net.JoinHostPort(authHost, authPort)
 	cc, err := grpc.NewClient(authAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("grpc connection failed: %s", err.Error())
