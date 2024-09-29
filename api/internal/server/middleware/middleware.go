@@ -36,7 +36,7 @@ func NewAuthMiddleware(
 		claims, err := jwt.Parse(token, secret)
 
 		if err != nil {
-			log.Warn("failed to parse token")
+			log.Warn("failed to parse token", slog.Any("error", err))
 
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "bad token"})
 			c.Abort()
@@ -49,10 +49,11 @@ func NewAuthMiddleware(
 
 		ok, err := permsProvider.IsAdmin(int64(claims["uid"].(float64)))
 		if err != nil {
-			log.Warn("failed to authorize request")
+			log.Warn("failed to authorize request", slog.Any("error", err))
 
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
 			c.Abort()
+			return
 		}
 
 		if !ok {
@@ -60,6 +61,7 @@ func NewAuthMiddleware(
 
 			c.JSON(http.StatusForbidden, gin.H{"message": "forbidden"})
 			c.Abort()
+			return
 		}
 
 		log.Info("request authorized successfully")
