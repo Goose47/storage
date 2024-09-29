@@ -47,7 +47,7 @@ func NewAuthMiddleware(
 
 		log.Info("authorizing request")
 
-		ok, err := permsProvider.IsAdmin(int64(claims["user_id"].(float64)))
+		ok, err := permsProvider.IsAdmin(int64(claims["uid"].(float64)))
 		if err != nil {
 			log.Warn("failed to authorize request")
 
