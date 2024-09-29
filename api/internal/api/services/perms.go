@@ -5,6 +5,7 @@ import (
 	"fmt"
 	ssov1 "github.com/Goose47/go-grpc-sso.protos/gen/go/sso"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
 )
 
@@ -17,8 +18,7 @@ func NewPermsService(
 	log *slog.Logger,
 	authAddress string,
 ) (*PermsService, error) {
-	//cc, err := grpc.NewClient(authAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	cc, err := grpc.NewClient(authAddress)
+	cc, err := grpc.NewClient(authAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("grpc connection failed: %s", err.Error())
 	}
