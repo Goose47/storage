@@ -1,11 +1,14 @@
 package server
 
 import (
-	"Goose47/storage/api/controllers"
+	"Goose47/storage/internal/api/controllers"
 	"github.com/gin-gonic/gin"
 )
 
-func AddApiGroup(r *gin.Engine) {
+func AddApiGroup(
+	r *gin.Engine,
+	c *controllers.StorageController,
+) {
 	api := r.Group("api")
 	{
 		v1 := api.Group("v1")
@@ -14,7 +17,6 @@ func AddApiGroup(r *gin.Engine) {
 
 			storage := v1.Group("storage")
 			{
-				c := controllers.NewStorageController()
 				storage.GET("/:key", c.Get)
 				storage.POST("/:key", c.Set)
 				storage.DELETE("/:key", c.Delete)

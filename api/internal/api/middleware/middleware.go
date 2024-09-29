@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"Goose47/storage/api/errs"
+	"Goose47/storage/internal/api/errs"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"

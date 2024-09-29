@@ -1,9 +1,9 @@
 package tasks
 
 import (
-	"Goose47/storage/config"
-	database "Goose47/storage/db"
-	"Goose47/storage/models"
+	"Goose47/storage/internal/config"
+	database "Goose47/storage/internal/db"
+	"Goose47/storage/internal/models"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"

@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"Goose47/storage/config"
-	"Goose47/storage/models"
+	"Goose47/storage/internal/config"
+	"Goose47/storage/internal/models"
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
