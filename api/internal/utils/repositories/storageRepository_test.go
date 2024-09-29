@@ -1,10 +1,8 @@
 package repositories
 
 import (
-	"Goose47/storage/internal/config"
 	"Goose47/storage/internal/models"
 	"context"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,10 +33,6 @@ func setupMongo(t *testing.T) (*mongo.Collection, func()) {
 }
 
 func TestStorageRepository_FindByKey(t *testing.T) {
-	if config.AppConfig.Mode == gin.ReleaseMode {
-		t.Error("This tests can not be run in release mode")
-	}
-
 	coll, cleanup := setupMongo(t)
 	defer cleanup()
 	repo := NewStorageRepository(coll)
@@ -48,10 +42,10 @@ func TestStorageRepository_FindByKey(t *testing.T) {
 	_, err := coll.InsertOne(context.TODO(), item)
 	assert.NoError(t, err)
 
-	_, err = repo.FindByKey("badKey")
+	_, err = repo.Item("badKey")
 	assert.Error(t, err)
 
-	found, err := repo.FindByKey(key)
+	found, err := repo.Item(key)
 	assert.NoError(t, err)
 	assert.Equal(t, *item, *found)
 
@@ -61,17 +55,13 @@ func TestStorageRepository_FindByKey(t *testing.T) {
 }
 
 func TestStorageRepository_Set(t *testing.T) {
-	if config.AppConfig.Mode == gin.ReleaseMode {
-		t.Error("This tests can not be run in release mode")
-	}
-
 	coll, cleanup := setupMongo(t)
 	defer cleanup()
 	repo := NewStorageRepository(coll)
 
 	key, item := "key", &models.StorageItem{"key", 0, "path", "name"}
 
-	res, err := repo.Set(key, item)
+	res, err := repo.SaveItem(key, item)
 
 	assert.NoError(t, err)
 	assert.Equal(t, key, res)
@@ -90,23 +80,19 @@ func TestStorageRepository_Set(t *testing.T) {
 }
 
 func TestStorageRepository_DeleteByKey(t *testing.T) {
-	if config.AppConfig.Mode == gin.ReleaseMode {
-		t.Error("This tests can not be run in release mode")
-	}
-
 	coll, cleanup := setupMongo(t)
 	defer cleanup()
 	repo := NewStorageRepository(coll)
 
 	key, item := "key", &models.StorageItem{"key", 0, "path", "name"}
 
-	_, err := repo.DeleteByKey(key)
+	_, err := repo.DeleteItem(key)
 	assert.Error(t, err)
 
 	_, err = coll.InsertOne(context.TODO(), item)
 	assert.NoError(t, err)
 
-	deleted, err := repo.DeleteByKey(key)
+	deleted, err := repo.DeleteItem(key)
 	assert.NoError(t, err)
 	assert.Equal(t, *item, *deleted)
 
