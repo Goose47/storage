@@ -21,7 +21,7 @@ func NewPermsService(
 	authPort string,
 ) (*PermsService, error) {
 	authAddress := net.JoinHostPort(authHost, authPort)
-	cc, err := grpc.NewClient(authAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	cc, err := grpc.NewClient("passthrough:///"+authAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("grpc connection failed: %s", err.Error())
 	}

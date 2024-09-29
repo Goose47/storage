@@ -45,7 +45,6 @@ func main() {
 	}
 
 	taskManager.StopTasks()
-	//todo add grpc auth
 }
 
 const (
