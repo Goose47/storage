@@ -28,11 +28,11 @@ func New(cfg *config.DBConfig) (DB, error) {
 
 	conn, err := mongo.Connect(ctx, options.Client().ApplyURI(cfg.Url))
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %s", cfg.Url)
+		return DB{}, fmt.Errorf("failed to connect to database: %s", cfg.Url)
 	}
 	err = conn.Ping(ctx, readpref.Primary())
 	if err != nil {
-		return nil, fmt.Errorf("failed to ping database")
+		return DB{}, fmt.Errorf("failed to ping database")
 	}
 
 	return DB{

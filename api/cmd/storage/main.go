@@ -20,6 +20,7 @@ func main() {
 	db, err := database.New(cfg.DB)
 	if err != nil {
 		log.Error(fmt.Sprintf("could not connect to database: %s", err.Error()))
+		return
 	}
 
 	taskManager := tasks.New()

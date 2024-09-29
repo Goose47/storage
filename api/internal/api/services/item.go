@@ -147,6 +147,11 @@ func (s *ItemService) Delete(key string) error {
 
 	item, err := s.itemDeleter.DeleteItem(key)
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			log.Warn("item not found", slog.Any("error", err))
+			return fmt.Errorf("%s: %w", op, db.ErrItemNotFound)
+		}
+
 		log.Error("could not delete item", slog.Any("error", err))
 
 		return fmt.Errorf("%s: %w", op, err)
