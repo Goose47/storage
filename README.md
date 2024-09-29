@@ -2,8 +2,17 @@
 
 ## Description
 
-This projects provides a key-value persistent containerized microservice with mongo. It allows to set, retrieve and delete
+This project provides a key-value persistent containerized microservice with mongo.
+
+It allows to set, retrieve and delete
 various files. Files are removed after specified ttl if present. Files are stored in local filesystem but it is easy to move to a remote storage.
+
+Requests are authenticated with [grpc sso](https://github.com/Goose47/go-grpc-sso.protos/tree/main). App checks whether user is
+authenticated and then performs gRPC request so SSO server to check users permissions.
+
+## Prerequisites
+
+Running gRPC SSO application is required. App must be registered in SSO. JWT tokens are obtained via sso mentioned above.
 
 ## Steps to install
 
@@ -11,6 +20,8 @@ various files. Files are removed after specified ttl if present. Files are store
 - run ``docker compose up``
 
 ## API Description
+
+
 
 ------------------------------------------------------------------------------------------
 
