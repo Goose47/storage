@@ -21,7 +21,7 @@ func NewAuthMiddleware(
 		const op = "server.middleware.AuthMiddleware"
 		token := extractBearerToken(c)
 
-		log := l.With(slog.With("op", op), slog.String("token", token))
+		log := l.With(slog.String("op", op), slog.String("token", token))
 
 		log.Info("trying to authenticate request")
 
