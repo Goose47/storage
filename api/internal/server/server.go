@@ -3,8 +3,10 @@ package server
 import (
 	"Goose47/storage/internal/api/controllers"
 	"Goose47/storage/internal/config"
+	"Goose47/storage/internal/server/middleware"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log/slog"
 )
 
 // Serve runs http server and returns error if server stops
@@ -18,7 +20,12 @@ func Serve(
 	return router.Run(addr)
 }
 
-func NewRouter(c *controllers.StorageController) *gin.Engine {
+func NewRouter(
+	log *slog.Logger,
+	c *controllers.StorageController,
+	secret string,
+	permsProvider middleware.PermsProvider,
+) *gin.Engine {
 	r := gin.New()
 
 	r.RedirectTrailingSlash = true
@@ -26,6 +33,7 @@ func NewRouter(c *controllers.StorageController) *gin.Engine {
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(middleware.NewAuthMiddleware(log, secret, permsProvider))
 
 	AddApiGroup(r, c)
 

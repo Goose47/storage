@@ -27,10 +27,17 @@ func main() {
 	taskManager.RunTasks(&db, cfg.FS)
 
 	repo := repositories.NewStorageRepository(db.GetCollection())
-	service := services.NewItemService(log, repo, repo, repo, cfg.FS.Base)
-	controller := controllers.NewStorageController(service)
 
-	router := server.NewRouter(controller)
+	itemService := services.NewItemService(log, repo, repo, repo, cfg.FS.Base)
+	permsService, err := services.NewPermsService(log, cfg.AuthAddress)
+	if err != nil {
+		log.Error(fmt.Sprintf("could not create perms service: %s", err.Error()))
+		return
+	}
+
+	controller := controllers.NewStorageController(itemService)
+
+	router := server.NewRouter(log, controller, cfg.Secret, permsService)
 
 	err = server.Serve(cfg, router) // blocking
 	if err != nil {

@@ -8,9 +8,11 @@ import (
 )
 
 type Config struct {
-	Mode string
-	Host string
-	Port string
+	Mode        string
+	Host        string
+	Port        string
+	Secret      string
+	AuthAddress string
 
 	DB *DBConfig
 	FS *FSConfig
@@ -40,9 +42,11 @@ func MustLoad() *Config {
 	}
 
 	cfg := Config{
-		Mode: mustRetrieve("APP_MODE"),
-		Host: mustRetrieve("APP_HOST"),
-		Port: mustRetrieve("APP_PORT"),
+		Mode:        mustRetrieve("APP_MODE"),
+		Host:        mustRetrieve("APP_HOST"),
+		Port:        mustRetrieve("APP_PORT"),
+		Secret:      mustRetrieve("APP_SECRET"),
+		AuthAddress: mustRetrieve("APP_AUTH_ADDRESS"),
 	}
 
 	cfg.DB = &DBConfig{

@@ -1,0 +1,77 @@
+package middleware
+
+import (
+	"Goose47/storage/internal/utils/jwt"
+	"github.com/gin-gonic/gin"
+	"log/slog"
+	"net/http"
+	"strings"
+)
+
+type PermsProvider interface {
+	IsAdmin(userID int64) (bool, error)
+}
+
+func NewAuthMiddleware(
+	l *slog.Logger,
+	secret string,
+	permsProvider PermsProvider,
+) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		const op = "server.middleware.AuthMiddleware"
+		token := extractBearerToken(c)
+
+		log := l.With(slog.With("op", op), slog.String("token", token))
+
+		log.Info("trying to authenticate request")
+
+		if token == "" {
+			log.Warn("empty Bearer token")
+
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
+			c.Abort()
+		}
+
+		claims, err := jwt.Parse(token, secret)
+
+		if err != nil {
+			log.Warn("failed to parse token")
+
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "bad token"})
+		}
+
+		log.Info("token parsed successfully")
+
+		log.Info("authorizing request")
+
+		ok, err := permsProvider.IsAdmin(int64(claims["user_id"].(float64)))
+		if err != nil {
+			log.Warn("failed to authorize request")
+
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
+			c.Abort()
+		}
+
+		if !ok {
+			log.Warn("unauthorized")
+
+			c.JSON(http.StatusForbidden, gin.H{"message": "forbidden"})
+			c.Abort()
+		}
+
+		log.Info("request authorized successfully")
+
+		c.Set("jwt", claims)
+	}
+}
+
+func extractBearerToken(c *gin.Context) string {
+	header := c.GetHeader("Authorization")
+	splitToken := strings.Split(header, "Bearer ")
+
+	if len(splitToken) != 2 {
+		return ""
+	}
+
+	return splitToken[1]
+}
